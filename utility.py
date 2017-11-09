@@ -8,46 +8,27 @@ import midi
 from pythonosc import osc_message_builder
 # https://github.com/monome/libmonome
 # https://monome.org/docs/grid-studies/python/
-import monome
+#import monome
 
-# In Mode 1 or Mode 2, all buttons act as momentary buttons.
+apc40_x = [1,2,3,4,5,6,7,8] # MIDI Channel
+apc40_y = [53,54,55,56,57,52,51,50] # MIDI note number
 
-# initialize values for APC matrix to all off
-led_states = { "off" : 0,
-               "green" : 1,
-               "green blink" : 2,
-               "red" : 3,
-               "red blink" : 4,
-               "yellow" : 5,
-               "yellow blink" : 6
-              }
-apc40 = [
-         [1,1]: [53,1,led_states['off']],
-         [1,2]: [54,1,led_states['off']],
-         [1,3]: [55,1,led_states['off']],
-         [1,4]: [56,1,led_states['off']],
-         [1,5]: [57,1,led_states['off']],
-         [2,1]: [53,2,led_states['off']],
-         [2,2]: [54,2,led_states['off']],
-         [2,3]: [55,2,led_states['off']],
-         [2,4]: [56,2,led_states['off']],
-         [2,5]: [57,2,led_states['off']],
-         [3,1]: [53,3,led_states['off']],
-         [3,2]: [54,3,led_states['off']],
-         [3,3]: [56,3,led_states['off']],
-         [3,4]: [56,3,led_states['off']],
-         [3,5]: [57,3,led_states['off']],
-         [4,1]: [53,4,led_states['off']],
-         [4,2]: [54,4,led_states['off']],
-         [4,3]: [55,4,led_states['off']],
-         [4,4]: [56,4,led_states['off']],
-         [4,5]: [57,4,led_states['off']],
-         [5,1]: [53,5,led_states['off']],
-         [5,2]: [54,5,led_states['off']],
-         [5,3]: [55,5,led_states['off']],
-         [5,4]: [56,5,led_states['off']],
-         [5,5]: [57,5,led_states['off']]
-        ]
+def set_mode(m_type):
+    if (m_type == 1):
+        sysex = "F0 47 00 73 60 00 04 41 01 01 00 F7"
+    if (m_type == 2):
+        sysex = "F0 47 00 73 60 00 04 42 01 01 00 F7"
+    else:
+        sysex = "F0 47 00 73 60 00 04 40 01 01 00 F7"
+
+def midi_to_monome(event):
+    x = event[1]
+    y = apc40_y.index(event[0]) + 1
+    state = event[2]
+    return [x,y,state]
+
+print midi_to_monome([52,3,0])
+
 # initialize monome
 # https://monome.org/docs/osc/
 # here's the server
