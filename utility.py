@@ -50,8 +50,15 @@ class WriteLoop:
         seq.drain()
         time.sleep(.5)
 
-apc40_x = [1,2,3,4,5,6,7,8] # MIDI Channel
-apc40_y = [53,54,55,56,57,52,51,50] # MIDI note number
+def midi_to_monome(event):
+    apc40_x = [1,2,3,4,5,6,7,8] # MIDI Channel
+    apc40_y = [53,54,55,56,57,52,51,50] # MIDI note number
+    x = event[1]
+    y = apc40_y.index(event[0]) + 1
+    state = event[2]
+    return [x,y,state]
+
+print midi_to_monome([52,3,0])
 
 def set_mode(m_type):
     if (m_type == 1):
@@ -64,15 +71,7 @@ def set_mode(m_type):
         sysex = [0xF0,0x47,0x00,0x73,0x60,0x00,0x04,0x40,0x01,0x01,0x00,0xF7]
         midi.SysexEvent(data=sysex)
 
-def midi_to_monome(event):
-    x = event[1]
-    y = apc40_y.index(event[0]) + 1
-    state = event[2]
-    return [x,y,state]
-
 set_mode(mode["ableton mode"])
-
-print midi_to_monome([52,3,0])
 
 # initialize monome
 # https://monome.org/docs/osc/
