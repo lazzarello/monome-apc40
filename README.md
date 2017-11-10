@@ -5,6 +5,7 @@ Glue to make the Akai APC40 work with Monome OSC software
 
 ## Installation
 
+```
 git clone --recursive <url>
 pacman -S python2 python2-pip swig alsa-lib alsa-utils alsa-tools
 pip install virtualenv
@@ -13,3 +14,4 @@ source env/bin/activate
 pip install -r requirements.txt
 cd python-midi
 python setup.py install
+```
