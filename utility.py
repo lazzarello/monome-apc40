@@ -2,6 +2,7 @@
 
 # MIDI library
 # https://github.com/vishnubob/python-midi
+import midi
 import midi.sequencer as sequencer
 # OSC library
 # https://pypi.python.org/pypi/python-osc
@@ -10,8 +11,8 @@ from pythonosc import osc_message_builder
 # https://monome.org/docs/grid-studies/python/
 #import monome
 
-client = "APC40"
-port = "APC40"
+client = "16"
+port = "0"
 
 mode = { "ableton mode" : 1,
          "ableton alt mode" : 2,
@@ -31,24 +32,24 @@ class ReadLoop:
     seq = sequencer.SequencerRead(sequencer_resolution=120)
     seq.subscribe_port(0, 0)
     seq.start_sequencer()
-    while True:
-      event = seq.event_read()
-      if event is not None:
-          print event
+    #while True:
+    event = seq.event_read()
+    if event is not None:
+        print event
 
 class WriteLoop:
-    seq = sequencer.SequencerWrite(sequencer_resolution=pattern.resolution)
+    seq = sequencer.SequencerWrite(sequencer_resolution=120)
     seq.subscribe_port(client, port)
     seq.start_sequencer()
-    for event in events:
-        buf = seq.event_write(event, False, False, True)
-        if buf == None:
-            continue
-        if buf < 1000:
-            time.sleep(.5)
-    while event.tick > seq.queue_get_tick_time():
-        seq.drain()
-        time.sleep(.5)
+    #for event in events:
+    #    buf = seq.event_write(event, False, False, True)
+    #    if buf == None:
+    #        continue
+    #    if buf < 1000:
+    #        time.sleep(.5)
+    #while event.tick > seq.queue_get_tick_time():
+    #    seq.drain()
+    #    time.sleep(.5)
 
 def midi_to_monome(event):
     apc40_x = [1,2,3,4,5,6,7,8] # MIDI Channel
