@@ -52,7 +52,6 @@ class WriteLoop:
 '''
 
 def midi_to_monome(event):
-    apc40_x = [1,2,3,4,5,6,7,8] # MIDI Channel
     apc40_y = [53,54,55,56,57,52,51,50,49,48] # MIDI note number
     x = event[1]
     y = apc40_y.index(event[0]) + 1
@@ -67,11 +66,9 @@ def set_mode(m_type):
         #seq.subscribe_port(client, port)
         #seq.start_sequencer()
         #sysex = midi.SysexEvent(data=[0x47,0x00,0x73,0x60,0x00,0x04,0x40,0x01,0x01,0x00])
-        #sysex = ["F0","47","00","73","60","00","04","40","01","01","00","F7"]
+        #seq.event_write(sysex, False, False, True)
         sysex = "F0 47 00 73 60 00 04 41 01 01 00 F7"
         subprocess.call(["amidi", "-p", "hw:0,0,0", "-S",sysex])
-
-        #seq.event_write(sysex, False, False, True)
     if (m_type == 2):
         sysex = [0xF0,0x47,0x00,0x73,0x60,0x00,0x04,0x42,0x01,0x01,0x00,0xF7]
         midi.SysexEvent(data=sysex)
