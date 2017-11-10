@@ -1,56 +1,28 @@
 #!/usr/bin/python
 
 # MIDI library
-# https://github.com/vishnubob/python-midi
-import midi
-import midi.sequencer as sequencer
+# https://pypi.python.org/pypi/python-rtmidi
+import rtmidi
 # OSC library
 # https://pypi.python.org/pypi/python-osc
 from pythonosc import osc_message_builder
 import subprocess
 
-client = "16"
-port = "0"
+device_name = "IAC Driver Bus 1"
+
+midiout = rtmidi.MidiOut()
+available_ports = midiout.get_ports()
+
+if available_ports:
+    port_index = available_ports.index(device_name)
+    midiout.open_port(port_index)
+else:
+    midiout.open_virtual_port("My virtual output")
 
 mode = { "ableton mode" : 1,
          "ableton alt mode" : 2,
          "generic mode" : 0
        }
-
-# initialize the an ALSA sequencer object
-hardware = sequencer.SequencerHardware()
-
-if not client.isdigit:
-    client = hardware.get_client(client)
-
-if not port.isdigit:
-    port = hardware.get_port(port)
-
-'''
-class ReadLoop:
-    seq = sequencer.SequencerRead(sequencer_resolution=120)
-    seq.subscribe_port(0, 0)
-    seq.start_sequencer()
-    #while True:
-    event = seq.event_read()
-    if event is not None:
-        print event
-
-class WriteLoop:
-    seq = sequencer.SequencerWrite(sequencer_resolution=120)
-    seq.subscribe_port(client, port)
-    seq.start_sequencer()
-    #for event in events:
-    #    buf = seq.event_write(event, False, False, True)
-    #    if buf == None:
-    #        continue
-    #    if buf < 1000:
-    #        time.sleep(.5)
-    #while event.tick > seq.queue_get_tick_time():
-    #    seq.drain()
-    #    time.sleep(.5)
-'''
-
 def midi_to_monome(event):
     apc40_y = [53,54,55,56,57,52,51,50,49,48] # MIDI note number
     x = event[1]
@@ -58,23 +30,21 @@ def midi_to_monome(event):
     state = event[2]
     return [x,y,state]
 
+def monome_to_midi(event):
+    return "noteon"
+
 #print midi_to_monome([52,3,0])
 
 def set_mode(m_type):
     if (m_type == 1):
-        #seq = sequencer.SequencerWrite(sequencer_resolution=120)
-        #seq.subscribe_port(client, port)
-        #seq.start_sequencer()
-        #sysex = midi.SysexEvent(data=[0x47,0x00,0x73,0x60,0x00,0x04,0x40,0x01,0x01,0x00])
-        #seq.event_write(sysex, False, False, True)
-        sysex = "F0 47 00 73 60 00 04 41 01 01 00 F7"
-        subprocess.call(["amidi", "-p", "hw:0,0,0", "-S",sysex])
+        sysex = [0xF0,0x47,0x00,0x73,0x60,0x00,0x04,0x41,0x01,0x01,0x00,0xF7]
+        midiout.send_message(sysex)
     if (m_type == 2):
         sysex = [0xF0,0x47,0x00,0x73,0x60,0x00,0x04,0x42,0x01,0x01,0x00,0xF7]
-        midi.SysexEvent(data=sysex)
+        midiout.send_message(sysex)
     else:
         sysex = [0xF0,0x47,0x00,0x73,0x60,0x00,0x04,0x40,0x01,0x01,0x00,0xF7]
-        midi.SysexEvent(data=sysex)
+        midiout.send_message(sysex)
 
 set_mode(mode["ableton mode"])
 

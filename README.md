@@ -15,3 +15,8 @@ pip install -r requirements.txt
 cd python-midi
 python setup.py install
 ```
+
+## Python versions and C bindings
+
+[RTMidi C++ lib](http://www.music.mcgill.ca/~gary/rtmidi/) looks like the way to go.
+Python 3 looks like it should be a default.
