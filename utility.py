@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 # MIDI library
-# https://pypi.python.org/pypi/python-rtmidi
+# http://trac.chrisarndt.de/code/wiki/python-rtmidi
 import rtmidi
 # OSC library
 # https://pypi.python.org/pypi/python-osc
@@ -23,6 +23,7 @@ mode = { "ableton mode" : 1,
          "ableton alt mode" : 2,
          "generic mode" : 0
        }
+
 def midi_to_monome(event):
     apc40_y = [53,54,55,56,57,52,51,50,49,48] # MIDI note number
     x = event[1]
@@ -31,6 +32,8 @@ def midi_to_monome(event):
     return [x,y,state]
 
 def monome_to_midi(event):
+    # monome protocol
+    # https://monome.org/docs/osc/
     return "noteon"
 
 #print midi_to_monome([52,3,0])
@@ -39,7 +42,7 @@ def set_mode(m_type):
     if (m_type == 1):
         sysex = [0xF0,0x47,0x00,0x73,0x60,0x00,0x04,0x41,0x01,0x01,0x00,0xF7]
         midiout.send_message(sysex)
-    if (m_type == 2):
+    elif (m_type == 2):
         sysex = [0xF0,0x47,0x00,0x73,0x60,0x00,0x04,0x42,0x01,0x01,0x00,0xF7]
         midiout.send_message(sysex)
     else:
@@ -48,8 +51,5 @@ def set_mode(m_type):
 
 set_mode(mode["ableton mode"])
 
-# initialize monome
-# https://monome.org/docs/osc/
 # here's the server
 # https://github.com/monome/serialosc/blob/master/src/serialosc-device/server.c
-monome = []
