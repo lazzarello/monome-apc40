@@ -4,7 +4,7 @@
 # http://trac.chrisarndt.de/code/wiki/python-rtmidi
 import rtmidi
 # OSC library
-# https://pypi.python.org/pypi/python-osc
+# https://github.com/attwad/python-osc
 from pythonosc import osc_message_builder
 from pythonosc import dispatcher
 from pythonosc import osc_server

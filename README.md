@@ -33,7 +33,7 @@ By default running `python server.py` starts an OSC server on
 localhost:8000
 
 To test connectivity, run `python client.py` in a different shell and
-observe the server outpu
+observe the server output.
 
 ## Python versions and C bindings
 
