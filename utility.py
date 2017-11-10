@@ -7,9 +7,7 @@ import midi.sequencer as sequencer
 # OSC library
 # https://pypi.python.org/pypi/python-osc
 from pythonosc import osc_message_builder
-# https://github.com/monome/libmonome
-# https://monome.org/docs/grid-studies/python/
-#import monome
+import subprocess
 
 client = "16"
 port = "0"
@@ -28,6 +26,7 @@ if not client.isdigit:
 if not port.isdigit:
     port = hardware.get_port(port)
 
+'''
 class ReadLoop:
     seq = sequencer.SequencerRead(sequencer_resolution=120)
     seq.subscribe_port(0, 0)
@@ -50,21 +49,29 @@ class WriteLoop:
     #while event.tick > seq.queue_get_tick_time():
     #    seq.drain()
     #    time.sleep(.5)
+'''
 
 def midi_to_monome(event):
     apc40_x = [1,2,3,4,5,6,7,8] # MIDI Channel
-    apc40_y = [53,54,55,56,57,52,51,50] # MIDI note number
+    apc40_y = [53,54,55,56,57,52,51,50,49,48] # MIDI note number
     x = event[1]
     y = apc40_y.index(event[0]) + 1
     state = event[2]
     return [x,y,state]
 
-print midi_to_monome([52,3,0])
+#print midi_to_monome([52,3,0])
 
 def set_mode(m_type):
     if (m_type == 1):
-        sysex = [0xF0,0x47,0x00,0x73,0x60,0x00,0x04,0x41,0x01,0x01,0x00,0xF7]
-        midi.SysexEvent(data=sysex)
+        #seq = sequencer.SequencerWrite(sequencer_resolution=120)
+        #seq.subscribe_port(client, port)
+        #seq.start_sequencer()
+        #sysex = midi.SysexEvent(data=[0x47,0x00,0x73,0x60,0x00,0x04,0x40,0x01,0x01,0x00])
+        #sysex = ["F0","47","00","73","60","00","04","40","01","01","00","F7"]
+        sysex = "F0 47 00 73 60 00 04 41 01 01 00 F7"
+        subprocess.call(["amidi", "-p", "hw:0,0,0", "-S",sysex])
+
+        #seq.event_write(sysex, False, False, True)
     if (m_type == 2):
         sysex = [0xF0,0x47,0x00,0x73,0x60,0x00,0x04,0x42,0x01,0x01,0x00,0xF7]
         midi.SysexEvent(data=sysex)
