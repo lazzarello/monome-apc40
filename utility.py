@@ -6,7 +6,8 @@ import rtmidi
 # OSC library
 # https://pypi.python.org/pypi/python-osc
 from pythonosc import osc_message_builder
-import subprocess
+from pythonosc import dispatcher
+from pythonosc import osc_server
 
 device_name = "IAC Driver Bus 1"
 
@@ -25,6 +26,7 @@ mode = { "ableton mode" : 1,
        }
 
 def midi_to_monome(event):
+    # http://www.music.mcgill.ca/~gary/rtmidi/index.html#input
     apc40_y = [53,54,55,56,57,52,51,50,49,48] # MIDI note number
     x = event[1]
     y = apc40_y.index(event[0]) + 1
@@ -51,5 +53,14 @@ def set_mode(m_type):
 
 set_mode(mode["ableton mode"])
 
-# here's the server
+# here's the official Monome server
 # https://github.com/monome/serialosc/blob/master/src/serialosc-device/server.c
+
+if __name__ == "__main__":
+    dispatcher = dispatcher.Dispatcher()
+    dispatcher.map("/monome", print)
+
+    server = osc_server.ThreadingOSCUDPServer(
+      (127.0.0.1, 8000), dispatcher)
+    print("Serving on {}".format(server.server_address))
+    server.serve_forever()
