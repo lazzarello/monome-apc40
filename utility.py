@@ -25,20 +25,42 @@ mode = { "ableton mode" : 1,
          "generic mode" : 0
        }
 
+apc40_y = [53,54,55,56,57,52,51,50,49,48] # MIDI note numbers in order, top to bottom, each row
+
 def midi_to_monome(event):
+    # this is the MIDI input callback
     # http://www.music.mcgill.ca/~gary/rtmidi/index.html#input
-    apc40_y = [53,54,55,56,57,52,51,50,49,48] # MIDI note number
     x = event[1]
     y = apc40_y.index(event[0]) + 1
     state = event[2]
-    return [x,y,state]
+    return ["/monome/grid/key",x,y,state]
 
 def monome_to_midi(event):
     # monome protocol
     # https://monome.org/docs/osc/
-    return "noteon"
+    # "/monome/grid/led/set %s %s %s" % (x,y,state)
+    parts = event.split(' ')
+    if (parts[0] == "/monome/grid/led/set"):
+        print("set one led")
+    elif (parts[0] == "/monome/grid/led/all"):
+        print("set all leds")
+    elif (parts[0] == "/monome/grid/led/map"):
+        print("set some leds")
+    elif (parts[0] == "/monome/grid/led/row"):
+        print("set a row of leds")
+    elif (parts[0] == "/monome/grid/led/col"):
+        print("set a column of leds")
+    else:
+        print("unknown message %s" % event)
 
-#print midi_to_monome([52,3,0])
+    if (parts[3]):
+        midi = [0x90, parts[2], apc40_y.index(parts[1]), 127]
+        print("LED on, 0x90")
+    else:
+        midi = [0x80, parts[2], apc40_y.index(parts[1]), parts[3]]
+        print("LED off 0x80")
+
+    return midi
 
 def set_mode(m_type):
     if (m_type == 1):
@@ -56,11 +78,13 @@ set_mode(mode["ableton mode"])
 # here's the official Monome server
 # https://github.com/monome/serialosc/blob/master/src/serialosc-device/server.c
 
+# TODO where do we start a rtmidi callback loop? Is this a multithreaded
+# application?
 if __name__ == "__main__":
     dispatcher = dispatcher.Dispatcher()
-    dispatcher.map("/monome", print)
+    dispatcher.map("/monome/grid", print)
 
     server = osc_server.ThreadingOSCUDPServer(
-      (127.0.0.1, 8000), dispatcher)
+      ("127.0.0.1", 8000), dispatcher)
     print("Serving on {}".format(server.server_address))
     server.serve_forever()
