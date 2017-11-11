@@ -33,7 +33,6 @@ def monome_grid_key(event, data=None):
         y = apc40_y.index(note) + 1
         state = 1
         client.send_message("/monome/grid/key", [x, y, state])
-        print("/monome/grid/key %s %s %s" % (x, y, state))
     elif message[0] & 0xF0 == NOTE_OFF:
         status, note, velocity = message
         channel = (status & 0xF) + 1
@@ -41,7 +40,6 @@ def monome_grid_key(event, data=None):
         y = apc40_y.index(note) + 1
         state = 0
         client.send_message("/monome/grid/key", [x, y, state])
-        print("/monome/grid/key %s %s %s" % (x, y, state))
 
 if __name__ == "__main__":
   with open_midiinput(1, client_name='noteon2osc')[0] as midiin:

@@ -44,10 +44,12 @@ def monome_grid_led_set(namespace, x, y, state):
     makenote(x, y, state)
     print("%s %s %s %s" % (namespace, x, y, state)) 
 
-def monome_grid_led_all(namespace, x_max, y_max, state):
+def monome_grid_led_all(namespace, state):
     # outer loop for x, inner loop for y
-    makenote(x_max, y_max, state)
-    print("set all leds")
+    for x in range(apc40_x):
+        for y in range(len(apc40_y)):
+            print("%s %s %s %s" % (namespace, x + 1, y + 1, state)) 
+            makenote(x + 1, y + 1, state)
 
 def monome_grid_led_map(namespace, x, y, bitmask, state):
     print("set some leds")
