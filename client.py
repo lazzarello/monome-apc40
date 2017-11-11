@@ -24,6 +24,12 @@ if __name__ == "__main__":
   for x in range(10):
     #client.send_message("/monome/grid", [1, 1, random.random()])
     client.send_message("/monome/grid/led/set", [1, 1, 1])
+    client.send_message("/monome/grid/led/set", [8, 10, 1])
+    client.send_message("/monome/grid/led/set", [8, 1, 1])
+    client.send_message("/monome/grid/led/set", [1, 10, 1])
     time.sleep(0.5)
     client.send_message("/monome/grid/led/set", [1, 1, 0])
+    client.send_message("/monome/grid/led/set", [8, 10, 0])
+    client.send_message("/monome/grid/led/set", [8, 1, 0])
+    client.send_message("/monome/grid/led/set", [1, 10, 0])
     time.sleep(0.5)

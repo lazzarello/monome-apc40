@@ -27,6 +27,7 @@ mode = { "ableton mode" : 1,
          "generic mode" : 0
        }
 
+apc40_x = 8
 apc40_y = [53,54,55,56,57,52,51,50,49,48] # MIDI note numbers in order, top to bottom, each row
 
 def midi_to_monome(event):
@@ -76,7 +77,7 @@ set_mode(mode["ableton mode"])
 # here's the official Monome server
 # https://github.com/monome/serialosc/blob/master/src/serialosc-device/server.c
 
-# TODO where do we start a rtmidi callback loop? Is this a multithreaded
+# TODO where do we start a rtmidi callback loop for midi input? Is this a multithreaded
 # application?
 if __name__ == "__main__":
     dispatcher = dispatcher.Dispatcher()
