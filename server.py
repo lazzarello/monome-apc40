@@ -42,7 +42,7 @@ def monome_grid_led_set(namespace, x, y, state):
     # monome protocol
     # https://monome.org/docs/osc/
     makenote(x, y, state)
-    print("single LED at %s , %s" % (x, y)) 
+    print("%s %s %s %s" % (namespace, x, y, state)) 
 
 def monome_grid_led_all(namespace, x_max, y_max, state):
     # outer loop for x, inner loop for y
@@ -83,6 +83,7 @@ if __name__ == "__main__":
     dispatcher.map("/monome/grid/led/map", monome_grid_led_map)
     dispatcher.map("/monome/grid/led/row", monome_grid_led_row)
     dispatcher.map("/monome/grid/led/col", monome_grid_led_set)
+    dispatcher.map("/monome/grid/key", print)
 
     server = osc_server.ThreadingOSCUDPServer(
       ("127.0.0.1", 8000), dispatcher)
