@@ -22,5 +22,8 @@ if __name__ == "__main__":
   client = udp_client.SimpleUDPClient(args.ip, args.port)
 
   for x in range(10):
-    client.send_message("/monome/grid", [1, 1, random.random()])
-    time.sleep(1)
+    #client.send_message("/monome/grid", [1, 1, random.random()])
+    client.send_message("/monome/grid/led/set", [1, 1, 1])
+    time.sleep(0.5)
+    client.send_message("/monome/grid/led/set", [1, 1, 0])
+    time.sleep(0.5)
