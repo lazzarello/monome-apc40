@@ -27,7 +27,7 @@ mode = { "ableton mode" : 1,
          "generic mode" : 0
        }
 
-apc40_x = 8
+apc40_x = 8 # size
 apc40_y = [53,54,55,56,57,52,51,50,49,48] # MIDI note numbers in order, top to bottom, each row
 
 def midi_to_monome(event):
@@ -38,28 +38,35 @@ def midi_to_monome(event):
     state = event[2]
     return ["/monome/grid/key",x,y,state]
 
-def monome_to_midi(namespace, x, y, state):
+def makenote(x, y, state):
+    if (state):
+        midi = [NOTE_ON | (x - 1), apc40_y[y - 1], state]
+        midiout.send_message(midi)
+    else:
+        midi = [NOTE_OFF | (x - 1), apc40_y[y - 1], state]
+        midiout.send_message(midi)
+
+def monome_grid_led_set(namespace, x, y, state):
     # monome protocol
     # https://monome.org/docs/osc/
-    if (namespace == "/monome/grid/led/set"):
-        if (state):
-            midi = [NOTE_ON | (x - 1), apc40_y[y - 1], state]
-            midiout.send_message(midi)
-            print(midi)
-        else:
-            midi = [NOTE_OFF | (x - 1), apc40_y[y - 1], state]
-            midiout.send_message(midi)
-            print(midi)
-    elif (namespace == "/monome/grid/led/all"):
-        print("set all leds")
-    elif (namespace == "/monome/grid/led/map"):
-        print("set some leds")
-    elif (namespace == "/monome/grid/led/row"):
-        print("set a row of leds")
-    elif (namespace == "/monome/grid/led/col"):
-        print("set a column of leds")
-    else:
-        print("unknown message %s" % namespace)
+    makenote(x, y, state)
+    print("single LED at %s , %s" % (x, y)) 
+
+def monome_grid_led_all(namespace, x_max, y_max, state):
+    # outer loop for x, inner loop for y
+    makenote(x_max, y_max, state)
+    print("set all leds")
+
+def monome_grid_led_map(namespace, x, y, bitmask, state):
+    print("set some leds")
+
+def monome_grid_led_row(namespace, y, state):
+    print("set a row of leds")
+    # loop apc40_x times and pass to makenote with y, state
+
+def monome_grid_led_col(namespace, x, state):
+    # loop over size of apc40_y and pass to makenote with y, state
+    print("set a column of leds")
 
 def set_mode(m_type):
     if (m_type == 1):
@@ -81,7 +88,11 @@ set_mode(mode["ableton mode"])
 # application?
 if __name__ == "__main__":
     dispatcher = dispatcher.Dispatcher()
-    dispatcher.map("/monome/grid/led/set", monome_to_midi)
+    dispatcher.map("/monome/grid/led/set", monome_grid_led_set)
+    dispatcher.map("/monome/grid/led/all", monome_grid_led_all)
+    dispatcher.map("/monome/grid/led/map", monome_grid_led_map)
+    dispatcher.map("/monome/grid/led/row", monome_grid_led_row)
+    dispatcher.map("/monome/grid/led/col", monome_grid_led_set)
 
     server = osc_server.ThreadingOSCUDPServer(
       ("127.0.0.1", 8000), dispatcher)
