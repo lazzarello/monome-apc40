@@ -84,8 +84,6 @@ set_mode(mode["ableton mode"])
 # here's the official Monome server
 # https://github.com/monome/serialosc/blob/master/src/serialosc-device/server.c
 
-# TODO where do we start a rtmidi callback loop for midi input? Is this a multithreaded
-# application?
 if __name__ == "__main__":
     dispatcher = dispatcher.Dispatcher()
     dispatcher.map("/monome/grid/led/set", monome_grid_led_set)
