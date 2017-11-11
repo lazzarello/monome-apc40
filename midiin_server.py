@@ -7,7 +7,7 @@ import argparse
 import random
 import time
 from rtmidi.midiutil import open_midiinput
-from rtmidi.midiconstants import NOTE_ON
+from rtmidi.midiconstants import NOTE_ON, NOTE_OFF
 
 from pythonosc import osc_message_builder
 from pythonosc import udp_client
@@ -20,18 +20,17 @@ def monome_grid_key(event, data=None):
     if message[0] & 0xF0 == NOTE_ON:
         status, note, velocity = message
         channel = (status & 0xF) + 1
-        print(event)
-
-'''
-        liblo.send(
-            ('127.0.0.1', 8000),
-            '/midi/%i/noteon' % channel,
-            note, velocity)
-        x = event[1]
-        y = apc40_y.index(event[0]) + 1
-        state = event[2]
-        return ["/monome/grid/key",x,y,state]
-'''
+        x = channel
+        y = apc40_y.index(note) + 1
+        state = 1
+        print("/monome/grid/key %s %s %s" % (x, y, state))
+    elif message[0] & 0xF0 == NOTE_OFF:
+        status, note, velocity = message
+        channel = (status & 0xF) + 1
+        x = channel
+        y = apc40_y.index(note) + 1
+        state = 0
+        print("/monome/grid/key %s %s %s" % (x, y, state))
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
@@ -41,7 +40,7 @@ if __name__ == "__main__":
       help="The port the OSC server is listening on")
   args = parser.parse_args()
 
-  #client = udp_client.SimpleUDPClient(args.ip, args.port)
+  client = udp_client.SimpleUDPClient(args.ip, args.port)
   with open_midiinput(1, client_name='noteon2osc')[0] as midiin:
     midiin.set_callback(monome_grid_key)
 

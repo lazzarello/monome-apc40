@@ -30,14 +30,6 @@ mode = { "ableton mode" : 1,
 apc40_x = 8 # size
 apc40_y = [53,54,55,56,57,52,51,50,49,48] # MIDI note numbers in order, top to bottom, each row
 
-def midi_to_monome(event):
-    # this is the MIDI input callback
-    # http://www.music.mcgill.ca/~gary/rtmidi/index.html#input
-    x = event[1]
-    y = apc40_y.index(event[0]) + 1
-    state = event[2]
-    return ["/monome/grid/key",x,y,state]
-
 def makenote(x, y, state):
     if (state):
         midi = [NOTE_ON | (x - 1), apc40_y[y - 1], state]
