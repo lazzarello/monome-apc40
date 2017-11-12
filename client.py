@@ -54,3 +54,5 @@ if __name__ == "__main__":
         client.send_message("/monome/grid/led/col", [x + 1, 0, 1])
         time.sleep(0.2)
         client.send_message("/monome/grid/led/col", [x + 1, 0, 0])
+    client.send_message("/monome/grid/led/all", 0)
+    time.sleep(1)

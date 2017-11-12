@@ -15,7 +15,7 @@ from pythonosc import udp_client
 parser = argparse.ArgumentParser()
 parser.add_argument("--ip", default="127.0.0.1",
   help="The ip of the OSC server")
-parser.add_argument("--port", type=int, default=8000,
+parser.add_argument("--port", type=int, default=12289,
   help="The port the OSC server is listening on")
 args = parser.parse_args()
 
@@ -32,6 +32,7 @@ def monome_grid_key(event, data=None):
         x = channel
         y = apc40_y.index(note) + 1
         state = 1
+        print("/monome/grid/key %s %s %s" % (x, y, state))
         client.send_message("/monome/grid/key", [x, y, state])
     elif message[0] & 0xF0 == NOTE_OFF:
         status, note, velocity = message
@@ -39,6 +40,7 @@ def monome_grid_key(event, data=None):
         x = channel
         y = apc40_y.index(note) + 1
         state = 0
+        print("/monome/grid/key %s %s %s" % (x, y, state))
         client.send_message("/monome/grid/key", [x, y, state])
 
 if __name__ == "__main__":
