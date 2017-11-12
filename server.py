@@ -54,13 +54,15 @@ def monome_grid_led_all(namespace, state):
 def monome_grid_led_map(namespace, x, y, bitmask, state):
     print("set some leds")
 
-def monome_grid_led_row(namespace, y, state):
-    print("set a row of leds")
-    # loop apc40_x times and pass to makenote with y, state
+def monome_grid_led_row(namespace, x_offset, y, state):
+    for x in range(apc40_x):
+        print("%s %s %s %s" % (namespace, x + 1, y, state)) 
+        makenote(x + 1, y, state)
 
-def monome_grid_led_col(namespace, x, state):
-    # loop over size of apc40_y and pass to makenote with y, state
-    print("set a column of leds")
+def monome_grid_led_col(namespace, x, y_offset, state):
+    for y in range(len(apc40_y)):
+        print("%s %s %s %s" % (namespace, x, y + 1, state)) 
+        makenote(x, y + 1, state)
 
 def set_mode(m_type):
     if (m_type == 1):
@@ -84,7 +86,7 @@ if __name__ == "__main__":
     dispatcher.map("/monome/grid/led/all", monome_grid_led_all)
     dispatcher.map("/monome/grid/led/map", monome_grid_led_map)
     dispatcher.map("/monome/grid/led/row", monome_grid_led_row)
-    dispatcher.map("/monome/grid/led/col", monome_grid_led_set)
+    dispatcher.map("/monome/grid/led/col", monome_grid_led_col)
     dispatcher.map("/monome/grid/key", print)
 
     server = osc_server.ThreadingOSCUDPServer(

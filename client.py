@@ -24,8 +24,10 @@ if __name__ == "__main__":
   while True:
     client.send_message("/monome/grid/led/all", 1)
     time.sleep(0.5)
-    client.send_message("/monome/grid/led/all", 0)
-    time.sleep(0.5)
+    for x in range(8):
+        for y in range(10):
+            time.sleep(0.1)
+            client.send_message("/monome/grid/led/set", [x + 1, y + 1, 0])
     client.send_message("/monome/grid/led/set", [1, 1, 1])
     client.send_message("/monome/grid/led/set", [8, 10, 1])
     client.send_message("/monome/grid/led/set", [8, 1, 1])
@@ -36,9 +38,19 @@ if __name__ == "__main__":
     client.send_message("/monome/grid/led/set", [8, 1, 0])
     client.send_message("/monome/grid/led/set", [1, 10, 0])
     time.sleep(0.5)
-    for x in range(8):
-        for y in range(10):
-            time.sleep(0.2)
+    for y in range(10):
+        for x in range(8):
+            time.sleep(0.1)
             client.send_message("/monome/grid/led/set", [x + 1, y + 1, 1])
-            time.sleep(0.2)
+            time.sleep(0.1)
             client.send_message("/monome/grid/led/set", [x + 1, y + 1, 0])
+    for y in range(10):
+        time.sleep(0.2)
+        client.send_message("/monome/grid/led/row", [0, y + 1, 1])
+        time.sleep(0.2)
+        client.send_message("/monome/grid/led/row", [0, y + 1, 0])
+    for x in range(8):
+        time.sleep(0.2)
+        client.send_message("/monome/grid/led/col", [x + 1, 0, 1])
+        time.sleep(0.2)
+        client.send_message("/monome/grid/led/col", [x + 1, 0, 0])
