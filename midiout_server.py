@@ -1,11 +1,7 @@
 #!/usr/bin/python
 
-# MIDI library
-# https://github.com/SpotlightKid/python-rtmidi
 import rtmidi
 from rtmidi.midiconstants import NOTE_OFF, NOTE_ON
-# OSC library
-# https://github.com/attwad/python-osc
 from pythonosc import osc_message_builder
 from pythonosc import dispatcher
 from pythonosc import osc_server
