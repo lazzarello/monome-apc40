@@ -1,8 +1,3 @@
-"""Small example OSC client
-
-This program sends 10 random values between 0.0 and 1.0 to the /filter address,
-waiting for 1 seconds between each value.
-"""
 import argparse
 import random
 import time
@@ -28,17 +23,17 @@ def monome_grid_key(event, data=None):
 
     if message[0] & 0xF0 == NOTE_ON:
         status, note, velocity = message
-        channel = (status & 0xF) + 1
+        channel = (status & 0xF)
         x = channel
-        y = apc40_y.index(note) + 1
+        y = apc40_y.index(note)
         state = 1
         print("/monome/grid/key %s %s %s" % (x, y, state))
         client.send_message("/monome/grid/key", [x, y, state])
     elif message[0] & 0xF0 == NOTE_OFF:
         status, note, velocity = message
-        channel = (status & 0xF) + 1
+        channel = (status & 0xF)
         x = channel
-        y = apc40_y.index(note) + 1
+        y = apc40_y.index(note)
         state = 0
         print("/monome/grid/key %s %s %s" % (x, y, state))
         client.send_message("/monome/grid/key", [x, y, state])
