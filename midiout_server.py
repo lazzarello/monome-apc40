@@ -28,10 +28,10 @@ apc40_y = [53,54,55,56,57,52,51,50,49,48] # MIDI note numbers in order, top to b
 
 def makenote(x, y, state):
     if (state):
-        midi = [NOTE_ON | (x - 1), apc40_y[y - 1], state]
+        midi = [NOTE_ON | (x), apc40_y[y], state]
         midiout.send_message(midi)
     else:
-        midi = [NOTE_OFF | (x - 1), apc40_y[y - 1], state]
+        midi = [NOTE_OFF | (x), apc40_y[y], state]
         midiout.send_message(midi)
 
 def monome_grid_led_set(namespace, x, y, state):
@@ -41,24 +41,23 @@ def monome_grid_led_set(namespace, x, y, state):
     print("%s %s %s %s" % (namespace, x, y, state)) 
 
 def monome_grid_led_all(namespace, state):
-    # outer loop for x, inner loop for y
     for x in range(apc40_x):
         for y in range(len(apc40_y)):
-            print("%s %s %s %s" % (namespace, x + 1, y + 1, state)) 
-            makenote(x + 1, y + 1, state)
+            print("%s %s %s %s" % (namespace, x, y, state)) 
+            makenote(x, y, state)
 
 def monome_grid_led_map(namespace, x, y, bitmask, state):
     print("set some leds")
 
 def monome_grid_led_row(namespace, x_offset, y, state):
     for x in range(apc40_x):
-        print("%s %s %s %s" % (namespace, x + 1, y, state)) 
-        makenote(x + 1, y, state)
+        print("%s %s %s %s" % (namespace, x, y, state)) 
+        makenote(x, y, state)
 
 def monome_grid_led_col(namespace, x, y_offset, state):
     for y in range(len(apc40_y)):
-        print("%s %s %s %s" % (namespace, x, y + 1, state)) 
-        makenote(x, y + 1, state)
+        print("%s %s %s %s" % (namespace, x, y, state)) 
+        makenote(x, y, state)
 
 def set_mode(m_type):
     if (m_type == 1):
