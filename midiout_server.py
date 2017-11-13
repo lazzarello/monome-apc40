@@ -5,6 +5,24 @@ from rtmidi.midiconstants import NOTE_OFF, NOTE_ON
 from pythonosc import osc_message_builder
 from pythonosc import dispatcher
 from pythonosc import osc_server
+import queue
+import multiprocessing
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='[%(levelname)s] (%(threadName)-10s) %(message)s',
+)
+
+class MessageTranslator(multiprocessing.Process):
+    def __init__(self, bq):
+        multiprocessing.Process.__init__(self)
+        self._bq = bq
+
+    def run(self):
+        # init MIDI stuff
+        # do some event processing
+        print("message recieved")
 
 #device_name = "IAC Driver Bus 1"
 device_name = 'Akai APC40:Akai APC40 MIDI 1 16:0'
@@ -76,8 +94,17 @@ set_mode(mode["ableton mode"])
 # https://github.com/monome/serialosc/blob/master/src/serialosc-device/server.c
 
 if __name__ == "__main__":
+
+    bq = multiprocessing.Queue()
+    translator = MessageTranslator(bq)
+
+    def put_in_queue(args, value):
+        bq.put([args[0], value])
+
     dispatcher = dispatcher.Dispatcher()
-    dispatcher.map("/monome/grid/led/set", monome_grid_led_set)
+    dispatcher.map("/debug", logging.debug)
+    #dispatcher.map("/monome/grid/led/set", monome_grid_led_set)
+    dispatcher.map("/monome/grid/led/set", put_in_queue)
     dispatcher.map("/monome/grid/led/all", monome_grid_led_all)
     dispatcher.map("/monome/grid/led/map", monome_grid_led_map)
     dispatcher.map("/monome/grid/led/row", monome_grid_led_row)
