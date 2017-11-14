@@ -84,10 +84,7 @@ if __name__ == "__main__":
     dispatcher.map("/monome/grid/led/col", monome_grid_led_col)
     dispatcher.map("/monome/grid/key", print)
     
-    # FIFO collections.deque
-    # order matters, the callbacks don't seem to care about order of incoming OSC
-
-    server = osc_server.ThreadingOSCUDPServer(
+    server = osc_server.BlockingOSCUDPServer(
       ("127.0.0.1", 8000), dispatcher)
     print("Serving on {}".format(server.server_address))
     server.serve_forever()
