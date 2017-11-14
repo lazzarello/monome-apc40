@@ -21,8 +21,15 @@ class MessageTranslator(multiprocessing.Process):
 
     def run(self):
         # init MIDI stuff
-        # do some event processing
-        print("message recieved")
+        running = True
+
+        while running:
+            # do some event processing
+            try:
+                namespace, x, y, state = self._bq.get(True)
+                logging.debug("Event {0} {1} {2} {3}".format(namespace, x, y, state))
+            except queue.Empty:
+                running = False
 
 #device_name = "IAC Driver Bus 1"
 device_name = 'Akai APC40:Akai APC40 MIDI 1 16:0'
@@ -53,8 +60,6 @@ def makenote(x, y, state):
         midiout.send_message(midi)
 
 def monome_grid_led_set(namespace, x, y, state):
-    # monome protocol
-    # https://monome.org/docs/osc/
     makenote(x, y, state)
     print("%s %s %s %s" % (namespace, x, y, state)) 
 
@@ -98,23 +103,24 @@ if __name__ == "__main__":
     bq = multiprocessing.Queue()
     translator = MessageTranslator(bq)
 
-    def put_in_queue(args, value):
-        bq.put([args[0], value])
+    def put_in_queue(namespace, x, y, state):
+        bq.put([namespace, x, y, state])
 
     dispatcher = dispatcher.Dispatcher()
     dispatcher.map("/debug", logging.debug)
-    #dispatcher.map("/monome/grid/led/set", monome_grid_led_set)
-    dispatcher.map("/monome/grid/led/set", put_in_queue)
+    dispatcher.map("/monome/grid/led/set", monome_grid_led_set)
+    #dispatcher.map("/monome/grid/led/set", put_in_queue)
     dispatcher.map("/monome/grid/led/all", monome_grid_led_all)
     dispatcher.map("/monome/grid/led/map", monome_grid_led_map)
     dispatcher.map("/monome/grid/led/row", monome_grid_led_row)
     dispatcher.map("/monome/grid/led/col", monome_grid_led_col)
-    dispatcher.map("/monome/grid/key", print)
+    dispatcher.map("/monome/grid/key", put_in_queue)
     
-    # FIFO collections.deque
-    # order matters, the callbacks don't seem to care about order of incoming OSC
-
     server = osc_server.ThreadingOSCUDPServer(
       ("127.0.0.1", 8000), dispatcher)
     print("Serving on {}".format(server.server_address))
+
+    translator.daemon = True
+    translator.start()
+
     server.serve_forever()
