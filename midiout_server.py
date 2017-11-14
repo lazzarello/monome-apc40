@@ -103,13 +103,13 @@ if __name__ == "__main__":
     bq = multiprocessing.Queue()
     translator = MessageTranslator(bq)
 
-    def put_in_queue(namespace, x, y, state):
-        bq.put([namespace, x, y, state])
+    def put_in_queue(args, value):
+        bq.put([args[0], value])
 
     dispatcher = dispatcher.Dispatcher()
     dispatcher.map("/debug", logging.debug)
-    dispatcher.map("/monome/grid/led/set", monome_grid_led_set)
-    #dispatcher.map("/monome/grid/led/set", put_in_queue)
+    #dispatcher.map("/monome/grid/led/set", monome_grid_led_set)
+    dispatcher.map("/monome/grid/led/set", put_in_queue)
     dispatcher.map("/monome/grid/led/all", monome_grid_led_all)
     dispatcher.map("/monome/grid/led/map", monome_grid_led_map)
     dispatcher.map("/monome/grid/led/row", monome_grid_led_row)
